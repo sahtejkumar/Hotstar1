@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotstar search Movies</title>
+    <style>
+        input {
+            width: 289px;
+            padding: 6px;
+        }
+
+        #movies {
+            height: 230px;
+            width: 322px;
+            padding: 6px;
+            border: 1px solid rgb(159, 163, 228);
+            border-top: none;
+            overflow: scroll;
+        }
+
+        #movies>div {
+            display: flex;
+            margin: 5px 0;
+        }
+
+        #movies>div>img {
+            max-width: 40%;
+            min-width: 40%;
+            max-height: 82px;
+            margin-right: 9px;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <input id="query" oninput="debounceFunction(main,400)" type="text">
+        <div id="movies"></div>
+    </div>
+    <div id="movieDesc"></div>
+</body>
+
+</html>
+<script>
+// url ---> https://www.omdbapi.com/?s=${query}&apikey=ffb0eb42
+
+    
+    async function searchMovies(query){
+        try{
+        const url = `https://www.omdbapi.com/?s=${query}&apikey=836238f8`;
+        let res = await fetch(url);
+        let data = await res.json();
+        return data.Search;
+        }catch(error){
+            console.log('error: ',error);
+        }
+    }
+
+    async function main(){
+        let query = document.getElementById('query').value;
+        let res = searchMovies(query); // async function returns promise
+        data = await res;
+        displayMovies(data);
+        // console.log(data);
+    }
+
+    let id;
+    function debounceFunction(func,delay){
+        if(id){
+            clearTimeout(id);
+        }
+        id = setTimeout(function(){
+            func();
+        },delay);
+    }
+
+    const moviesDiv = document.getElementById('movies');
+    function displayMovies(movies){
+        moviesDiv.innerHTML = null;
+        if(movies === undefined){
+            return false;
+        }
+        movies.forEach(el => {
+            let div = document.createElement('div');
+            let poster = document.createElement('img');
+            poster.src = el.Poster;
+            let name = document.createElement('h3');
+            name.innerText = el.Title;
+            div.append(poster,name);
+            moviesDiv.append(div);
+        });
+    }
+</script>
